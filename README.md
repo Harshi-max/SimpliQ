@@ -1,160 +1,274 @@
-# SimplifIQ - AI Lead Intelligence & Automated Outreach Platform
+# SimplifIQ — AI Lead Intelligence & Automated Outreach Platform
 
-SimplifIQ is a production-ready MVP for an AI-powered SaaS that automates the entire lead enrichment, auditing, and outreach process. When a prospect submits their details, the system validates the data, generates a highly personalized AI audit report, displays it instantly in-app, and delivers a beautifully formatted HTML report via email.
-
----
-
-## 🛠️ Status Overview: What Has Been Implemented
-
-Here is a summary of the architectural changes and features implemented in the current codebase:
-
-- **Email Pipeline Migration:** Replaced the default Resend API implementation with **Nodemailer**. The application is now fully decoupled from sandboxed domain restrictions and capable of routing emails dynamically to any target address.
-- **Auto-SMTP Fallback:** Configured `processLeadAction` to check for active Gmail configurations. If credentials are missing or incorrect, it automatically spins up a dummy Ethereal SMTP transporter. This ensures all mock sequences and local outreach tests run error-free and output a preview URL directly to the server logs.
-- **Dynamic Session Store:** Implemented `src/lib/store.ts` using a `globalThis` cache to preserve state across Next.js fast-refresh cycles. The in-memory store records lead states (**generating**, **completed**, **failed**) in real-time.
-- **Dynamic Admin Console:** Overhauled `/admin` to load dynamically from the local store instead of mock arrays. Top-level KPIs (Total Leads, Conversion Rate, Email Delivery Rates) update dynamically.
-- **Campaign Sequence Manager:** Added sequence schemas to the database store and built a fully functional **Create Sequence** modal with a Server Action (`createSequenceAction`) to dynamically update sequence catalogs.
-- **CSV Data Exporter:** Integrated a custom route handler at `/api/leads/export` to compile current lead logs into an RFC-compliant CSV download attachment.
-- **In-App Strategy Panel:** Configured `LeadForm.tsx` to read the generated audit report and render an immersive on-screen breakdown (Roadmaps, Opportunities, AI ideas) upon successful validation.
+SimplifIQ is an AI-powered SaaS platform that automates lead enrichment, business auditing, and personalized outreach workflows.  
+When a prospect submits their details, the platform validates the data, generates an AI-driven audit report, displays it instantly in-app, and sends a beautifully formatted outreach email automatically.
 
 ---
 
-## 🚀 Key Features
+# 🌐 Live Demo
 
-### 1. In-App AI Audit Analysis
-Prospects get immediate value! Upon submitting the multi-step form, SimplifIQ processes the data and displays a rich, structured business audit right on the screen. The report features:
-- **Executive Summary:** A strategic overview tailored to the company's biggest challenges.
-- **Key Growth Opportunities:** Key avenues for scaling revenue and conversions.
-- **AI Implementation Ideas:** Concrete ways the company can integrate AI to automate manual tasks.
-- **Strategic Roadmap:** A phased timeline (Phases 1-3) detailing execution steps.
+## 🚀 Deployed Application
+https://simpli-q.vercel.app/
 
-### 2. Double-Layer Nodemailer Outreach
-We transitioned from sandboxed Resend restrictions to a self-hosted Nodemailer transport system. To ensure zero-friction testing out of the box:
-- **Real Gmail Delivery:** Easily configured via a Gmail Address and a 16-character App Password.
-- **Automated Fallback Server:** If Gmail credentials are missing, invalid, or throw authentication errors, the pipeline automatically spins up a temporary **Ethereal Email** test account. It logs a clickable message preview URL in the terminal so you can test email templates instantly without any configuration.
-
-### 3. Dynamic Command Center (Admin Panel)
-A premium dark-themed dashboard (`/admin`) that updates in real-time as users submit forms:
-- **Dynamic Metrics:** Total Leads, Reports Generated, and Email Delivery Rate are calculated on the fly.
-- **Real-Time Submissions List:** View leads by status (**Generating**, **Sent PDF**, or **Enrichment Failed**) and submission timestamp.
-- **Multi-Tab Sidebar Navigation:** Toggle between **Leads** (Command Center), **Reports** (generated audits), and **Campaigns** without full page reloads.
-
-### 4. Interactive Campaigns & Email Sequences
-- Create new marketing sequences dynamically through an interactive modal.
-- Sequences are stored in-memory and rendered in a detailed table displaying active/draft statuses and sent counts.
-- Uses Next.js Server Actions to dynamically update sequence data and revalidate paths in real-time.
-
-### 5. Master CSV Lead Export
-- Located in the **Reports** tab.
-- Downloads a clean, comma-separated (CSV) file containing the entire dynamic leads database (ID, Name, Company, Email, Status, Date) for external CRM import.
+## 🎥 Full Walkthrough Video
+https://drive.google.com/file/d/1r3F0FP4Di8a5OxJ5sf43JxFCkD7vZ1Jx/view?usp=sharing
 
 ---
 
-## 🛠️ Tech Stack
+# ✨ Features
 
-- **Framework:** Next.js 14.2.5 (App Router)
-- **Styling:** Vanilla CSS & Tailwind CSS
-- **UI Components:** shadcn/ui & Radix UI Primitives
-- **Form Handling:** React Hook Form + Zod
-- **Animations:** Framer Motion
-- **Emails:** Nodemailer
-- **State Store:** Global In-memory Session State (retains data through hot-reloads)
+## 🔍 AI-Powered Business Audit Generation
+
+Generate structured AI audit reports instantly after form submission.
+
+### Includes:
+- Executive Summary
+- Growth Opportunities
+- AI Automation Recommendations
+- Strategic Roadmap
+- Actionable Insights
 
 ---
 
-## 📁 Directory Structure
+## 📧 Automated Outreach Pipeline
 
-```text
+Built using **Nodemailer** with dual delivery modes.
+
+### ✅ Live Gmail Delivery
+Configure Gmail SMTP credentials to send real outreach emails.
+
+### ✅ Ethereal Fallback Testing
+If SMTP credentials are unavailable or invalid:
+- Automatically spins up an Ethereal SMTP server
+- Generates preview URLs for testing emails locally
+- No setup required for development
+
+---
+
+## 📊 Dynamic Admin Dashboard
+
+A real-time command center for monitoring platform activity.
+
+### Dashboard Capabilities
+- Live Lead Tracking
+- Report Generation Status
+- Delivery Metrics
+- Campaign Monitoring
+- Real-Time Submission Updates
+
+---
+
+## 🧠 Campaign & Sequence Management
+
+Create and manage outreach campaigns dynamically.
+
+### Features
+- Create New Email Sequences
+- Track Active/Draft Campaigns
+- Real-Time State Updates
+- Dynamic Sequence Rendering
+
+---
+
+## 📁 CSV Export System
+
+Export all generated lead data instantly as a CSV file for CRM imports or reporting.
+
+### Includes:
+- Lead Name
+- Company
+- Email
+- Status
+- Submission Timestamp
+
+---
+
+# 🛠️ Tech Stack
+
+| Category | Technologies |
+|---|---|
+| Framework | Next.js 14 (App Router) |
+| Language | TypeScript |
+| Styling | Tailwind CSS |
+| UI Components | shadcn/ui + Radix UI |
+| Forms & Validation | React Hook Form + Zod |
+| Animations | Framer Motion |
+| Email Service | Nodemailer |
+| State Management | Global In-Memory Store |
+| Deployment | Vercel |
+
+---
+
+# 📂 Project Structure
+
+```bash
 ├── src/
 │   ├── actions/
-│   │   ├── createSequence.ts       # Server action to create email sequences
-│   │   └── processLead.ts          # Core Server Action for lead enrichment & email sending
+│   │   ├── createSequence.ts
+│   │   └── processLead.ts
+│   │
 │   ├── app/
 │   │   ├── admin/
-│   │   │   └── page.tsx            # Dynamic Admin Dashboard page (Command Center)
 │   │   ├── api/
-│   │   │   └── leads/
-│   │   │       └── export/
-│   │   │           └── route.ts    # API handler generating CSV lead exports
+│   │   │   └── leads/export/
 │   │   ├── get-started/
-│   │   │   └── page.tsx            # Multi-step onboarding form container
-│   │   ├── layout.tsx              # Root HTML wrapper with Sonner Toaster
-│   │   └── page.tsx                # High-converting landing page
+│   │   ├── layout.tsx
+│   │   └── page.tsx
+│   │
 │   ├── components/
-│   │   ├── ui/                     # Shared UI components (button, input, select, etc.)
-│   │   ├── CreateSequenceModal.tsx # Dialog to add new email outreach sequences
-│   │   └── LeadForm.tsx            # Onboarding form displaying instant AI audits
+│   │   ├── ui/
+│   │   ├── CreateSequenceModal.tsx
+│   │   └── LeadForm.tsx
+│   │
 │   ├── lib/
-│   │   ├── store.ts                # In-memory global state store (leads & campaigns)
-│   │   └── utils.ts                # Tailwind CSS class merger utility
+│   │   ├── store.ts
+│   │   └── utils.ts
+│   │
 │   └── types/
-│       └── index.ts                # Shared TypeScript schemas and validation types
-├── .env                            # Local environment variables configuration
-├── package.json                    # Dependencies and script definitions
-└── README.md                       # Documentation
+│       └── index.ts
+│
+├── .env
+├── package.json
+└── README.md
 ```
 
 ---
 
-## ⚙️ How to Setup and Run Locally
+# ⚙️ Local Setup
 
-Follow these step-by-step instructions to boot the system on your local machine:
+## 1️⃣ Clone the Repository
 
-### 1. Clone & Install Dependencies
-First, check out the repository, navigate into the directory, and install all runtime and development packages:
 ```bash
 git clone https://github.com/Harshi-max/SimpliQ.git
 cd SimpliQ
+```
+
+---
+
+## 2️⃣ Install Dependencies
+
+```bash
 npm install
 ```
 
-### 2. Configure Local Environment Variables
-Create a `.env` file in the root folder. You can configure your local environment to run in **Test Mode** (no email server setup needed) or **Live Mode** (sending actual emails to Gmail inboxes):
+---
+
+## 3️⃣ Configure Environment Variables
+
+Create a `.env` file in the root directory.
 
 ```env
-# ==========================================
-# 🟢 LIVE MODE SETUP (Optional)
-# ==========================================
-# Input your personal details to send real emails to submitted leads:
-EMAIL_USER="your-email@gmail.com"
-EMAIL_APP_PASSWORD="your-16-character-app-password"
+# Gmail SMTP Configuration (Optional)
 
-# ==========================================
-# 🟡 TEST MODE SETUP (Default fallback)
-# ==========================================
-# Leave the credentials blank or with default placeholders, 
-# and the app will generate local Ethereal test emails automatically.
+EMAIL_USER="your-email@gmail.com"
+EMAIL_APP_PASSWORD="your-app-password"
 ```
 
-> [!NOTE]
-> To get a valid Gmail `EMAIL_APP_PASSWORD`:
-> 1. Open your Google Account page and verify **2-Step Verification** is enabled.
-> 2. Search for **App passwords** in the top search bar.
-> 3. Generate a password for the app named `SimplifIQ`.
-> 4. Copy the 16-character code and paste it into the `.env` variable (without spaces).
+> If credentials are not provided, SimplifIQ automatically switches to Ethereal Email testing mode.
 
-### 3. Start the Next.js Local Server
-Start your Next.js local development server with:
+---
+
+## 4️⃣ Run the Development Server
+
 ```bash
 npm run dev
 ```
 
-Your terminal will print the active development address (usually `http://localhost:3000`).
+App runs on:
 
-### 4. Navigating the Application
-Once the local server is running, you can access the following pages:
-- **Landing Page:** Open `http://localhost:3000` to view the modern landing page.
-- **Intake Form:** Go to `http://localhost:3000/get-started` to test the multi-step onboarding wizard.
-- **Admin Dashboard:** Navigate to `http://localhost:3000/admin` to access the command center and monitor leads, reports, and campaigns.
+```bash
+http://localhost:3000
+```
 
 ---
 
-## 🧪 Testing the Application Flows
+# 🧪 Testing Workflow
 
-1. **Intake Flow:** Go to `/get-started`, fill out the multi-step form, and hit **Generate AI Audit**.
-   - Verify the audit report renders instantly on the success screen.
-   - Look at your dev server terminal. You should see a log: `Automated Email Generated! Preview URL: https://ethereal.email/message/...`. Copy and open the link to view the fully-rendered HTML email template!
-2. **Dashboard Verification:** Go to `/admin`.
-   - The metrics (Total Leads, Reports Generated, Emails Delivered) will dynamically update.
-   - The lead you just submitted will appear in the table with its dynamic timestamp and status tag.
-3. **Sequence Creation:** Go to `/admin?tab=campaigns`, click **Create New Sequence**, input your template parameters, and confirm it appends dynamically to the campaigns list.
-4. **CSV Export:** Go to `/admin?tab=reports` and click **Download Master CSV**. Verify that a CSV file containing your database records downloads instantly.
+## Lead Intake Flow
+
+Visit:
+
+```bash
+/get-started
+```
+
+- Submit company information
+- Generate AI audit
+- Verify report rendering
+- Check email preview link in terminal
+
+---
+
+## Admin Dashboard
+
+Visit:
+
+```bash
+/admin
+```
+
+Verify:
+- Dynamic lead updates
+- Report statuses
+- Campaign metrics
+- Email delivery tracking
+
+---
+
+## Campaign Management
+
+Inside `/admin`:
+- Create outreach sequences
+- Manage campaigns dynamically
+- Monitor active/draft sequences
+
+---
+
+## CSV Export
+
+Navigate to:
+- Reports Tab → Download CSV
+
+Exports all generated lead records instantly.
+
+---
+
+# 📧 SMTP Setup (Optional)
+
+To send real emails:
+
+1. Enable **2-Step Verification** on Google
+2. Generate an **App Password**
+3. Add credentials to `.env`
+
+```env
+EMAIL_USER="your-email@gmail.com"
+EMAIL_APP_PASSWORD="your-16-char-password"
+```
+
+---
+
+# 🚀 Production Highlights
+
+- AI-Powered Lead Intelligence
+- Automated Outreach Engine
+- Real-Time Admin Analytics
+- Dynamic Campaign Management
+- Instant CSV Exporting
+- Fully Responsive UI
+- Production-Ready Architecture
+
+---
+
+# 👨‍💻 Author
+
+## Harshitha Arava
+
+- GitHub: https://github.com/Harshi-max
+- LinkedIn: https://www.linkedin.com/in/harshitha-arava/
+
+---
+
+# ⭐ If You Like This Project
+
+Give it a star on GitHub and share feedback!
