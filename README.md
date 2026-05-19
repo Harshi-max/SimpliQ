@@ -4,6 +4,20 @@ SimplifIQ is a production-ready MVP for an AI-powered SaaS that automates the en
 
 ---
 
+## 🛠️ Status Overview: What Has Been Implemented
+
+Here is a summary of the architectural changes and features implemented in the current codebase:
+
+- **Email Pipeline Migration:** Replaced the default Resend API implementation with **Nodemailer**. The application is now fully decoupled from sandboxed domain restrictions and capable of routing emails dynamically to any target address.
+- **Auto-SMTP Fallback:** Configured `processLeadAction` to check for active Gmail configurations. If credentials are missing or incorrect, it automatically spins up a dummy Ethereal SMTP transporter. This ensures all mock sequences and local outreach tests run error-free and output a preview URL directly to the server logs.
+- **Dynamic Session Store:** Implemented `src/lib/store.ts` using a `globalThis` cache to preserve state across Next.js fast-refresh cycles. The in-memory store records lead states (**generating**, **completed**, **failed**) in real-time.
+- **Dynamic Admin Console:** Overhauled `/admin` to load dynamically from the local store instead of mock arrays. Top-level KPIs (Total Leads, Conversion Rate, Email Delivery Rates) update dynamically.
+- **Campaign Sequence Manager:** Added sequence schemas to the database store and built a fully functional **Create Sequence** modal with a Server Action (`createSequenceAction`) to dynamically update sequence catalogs.
+- **CSV Data Exporter:** Integrated a custom route handler at `/api/leads/export` to compile current lead logs into an RFC-compliant CSV download attachment.
+- **In-App Strategy Panel:** Configured `LeadForm.tsx` to read the generated audit report and render an immersive on-screen breakdown (Roadmaps, Opportunities, AI ideas) upon successful validation.
+
+---
+
 ## 🚀 Key Features
 
 ### 1. In-App AI Audit Analysis
@@ -81,42 +95,56 @@ A premium dark-themed dashboard (`/admin`) that updates in real-time as users su
 
 ---
 
-## ⚙️ Getting Started & Local Setup
+## ⚙️ How to Setup and Run Locally
+
+Follow these step-by-step instructions to boot the system on your local machine:
 
 ### 1. Clone & Install Dependencies
-Navigate to the project root and run:
+First, check out the repository, navigate into the directory, and install all runtime and development packages:
 ```bash
+git clone https://github.com/Harshi-max/SimpliQ.git
+cd SimpliQ
 npm install
 ```
 
-### 2. Environment Variables Configuration
-Create a `.env` file in the root folder. Paste the following structure:
+### 2. Configure Local Environment Variables
+Create a `.env` file in the root folder. You can configure your local environment to run in **Test Mode** (no email server setup needed) or **Live Mode** (sending actual emails to Gmail inboxes):
+
 ```env
-# Gmail SMTP Credentials (Optional - Real Email Delivery)
+# ==========================================
+# 🟢 LIVE MODE SETUP (Optional)
+# ==========================================
+# Input your personal details to send real emails to submitted leads:
 EMAIL_USER="your-email@gmail.com"
 EMAIL_APP_PASSWORD="your-16-character-app-password"
 
-# Optional Database Configurations
-DATABASE_URL="your-postgresql-database-url"
+# ==========================================
+# 🟡 TEST MODE SETUP (Default fallback)
+# ==========================================
+# Leave the credentials blank or with default placeholders, 
+# and the app will generate local Ethereal test emails automatically.
 ```
 
-> [!IMPORTANT]
-> **If you leave Gmail credentials as placeholder values or omit them**, the platform will silently activate the Ethereal Email test system. Real emails won't send, but a clickable preview URL will print in your terminal logs!
+> [!NOTE]
+> To get a valid Gmail `EMAIL_APP_PASSWORD`:
+> 1. Open your Google Account page and verify **2-Step Verification** is enabled.
+> 2. Search for **App passwords** in the top search bar.
+> 3. Generate a password for the app named `SimplifIQ`.
+> 4. Copy the 16-character code and paste it into the `.env` variable (without spaces).
 
-#### How to get a Google App Password:
-1. Log in to your [Google Account Settings](https://myaccount.google.com).
-2. Go to **Security**.
-3. Under "How you sign in to Google", ensure **2-Step Verification** is turned **ON**.
-4. Search for **App passwords** in the search bar.
-5. Create a new App Password (name it `SimplifIQ`).
-6. Copy the generated **16-character code** (e.g. `abcd efgh ijkl mnop`) and set it as `EMAIL_APP_PASSWORD` in your `.env`.
-
-### 3. Run Development Server
-Start the local server:
+### 3. Start the Next.js Local Server
+Start your Next.js local development server with:
 ```bash
 npm run dev
 ```
-Open [http://localhost:3000](http://localhost:3000) to view the application!
+
+Your terminal will print the active development address (usually `http://localhost:3000`).
+
+### 4. Navigating the Application
+Once the local server is running, you can access the following pages:
+- **Landing Page:** Open `http://localhost:3000` to view the modern landing page.
+- **Intake Form:** Go to `http://localhost:3000/get-started` to test the multi-step onboarding wizard.
+- **Admin Dashboard:** Navigate to `http://localhost:3000/admin` to access the command center and monitor leads, reports, and campaigns.
 
 ---
 
